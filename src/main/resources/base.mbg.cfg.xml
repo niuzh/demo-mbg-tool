@@ -11,6 +11,7 @@
         <property name="endingDelimiter" value="`"/>
         <property name="javaFileEncoding" value="UTF8"/>
         <property name="overwrite" value="true"/>
+        <property name="tablePreName" value="Credit"/>
 
         <jdbcConnection driverClass="${mybatisGenerator.driverClass}" connectionURL="${mybatisGenerator.connectionURL}"
                         userId="${mybatisGenerator.userId}" password="${mybatisGenerator.password}">
@@ -21,21 +22,25 @@
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
         <!--数据对象-->
-        <javaModelGenerator targetPackage="com.funi.demo.mbg.dto"
+        <javaModelGenerator targetPackage="com.funi.plantform.credit.bo"
                             targetProject="${targetProject}/java">
             <property name="trimStrings" value="true"/>
             <property name="rootClass" value="BasicDto"/>
         </javaModelGenerator>
         <!--mapper.xml-->
-        <sqlMapGenerator targetPackage="com.funi.demo.mbg.dao.mapper"
+        <sqlMapGenerator targetPackage="com.funi.plantform.credit.mapper"
                          targetProject="${targetProject}/java"/>
         <!--Mapper-->
-        <javaClientGenerator targetPackage="com.funi.demo.mbg.dao"
+        <javaClientGenerator targetPackage="com.funi.plantform.credit.mapper"
                              targetProject="${targetProject}/resources/mapper" type="XMLMAPPER">
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
-        <table tableName="CF_USER"> </table>
+        <table tableName="CREDIT_DICTIONARY"/>
+        <table tableName="CREDIT_ORG_SCORE"/>
+        <table tableName="CREDIT_ORG_SCORE_REC"/>
+        <table tableName="CREDIT_ORG_SCORE_REVIEW"/>
+        <table tableName="CREDIT_ORG_SCORE_RULE"/>
 
     </context>
 </generatorConfiguration>

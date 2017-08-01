@@ -77,6 +77,7 @@ public class DemoPlugin extends PluginAdapter {
     }
 
     protected void makeSerializable(TopLevelClass topLevelClass,IntrospectedTable introspectedTable) {
+        if(true)return;
         if (addGWTInterface) {
             topLevelClass.addImportedType(gwtSerializable);
             topLevelClass.addSuperInterface(gwtSerializable);
