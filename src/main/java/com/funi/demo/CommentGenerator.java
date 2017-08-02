@@ -13,11 +13,13 @@ public class CommentGenerator implements org.mybatis.generator.api.CommentGenera
     private Properties properties = new Properties();
     private boolean suppressDate = true;
     private boolean suppressAllComments = true;
+    private boolean suppressAllGetSetComments = true;
 
     public void addJavaFileComment(CompilationUnit compilationUnit) {
     }
 
     public void addComment(XmlElement xmlElement) {
+        xmlElement.addElement(new TextElement(""));
         if (!this.suppressAllComments) {
             xmlElement.addElement(new TextElement("<!--"));
             StringBuilder sb = new StringBuilder();
@@ -43,7 +45,7 @@ public class CommentGenerator implements org.mybatis.generator.api.CommentGenera
     public void addConfigurationProperties(Properties properties) {
         this.properties.putAll(properties);
         this.suppressDate = StringUtility.isTrue(properties.getProperty("suppressDate"));
-        this.suppressAllComments = StringUtility.isTrue(properties.getProperty("suppressAllComments"));
+        this.suppressAllComments = true;//StringUtility.isTrue(properties.getProperty("suppressAllComments"));
     }
 
     protected void addJavadocTag(JavaElement javaElement, boolean markAsDoNotDelete) {
@@ -71,6 +73,7 @@ public class CommentGenerator implements org.mybatis.generator.api.CommentGenera
         if (!this.suppressAllComments) {
             StringBuilder sb = new StringBuilder();
             innerClass.addJavaDocLine("/**");
+            innerClass.addJavaDocLine(introspectedTable.getRemarks());
             sb.append(" * This class corresponds to the database table ");
             sb.append(introspectedTable.getFullyQualifiedTable());
             innerClass.addJavaDocLine(sb.toString());
@@ -92,9 +95,6 @@ public class CommentGenerator implements org.mybatis.generator.api.CommentGenera
     }
 
     public void addFieldComment(Field field, IntrospectedTable introspectedTable, IntrospectedColumn introspectedColumn) {
-        if (this.suppressAllComments) {
-            return;
-        }
         /*StringBuilder sb = new StringBuilder();
         field.addJavaDocLine("*//**");
         sb.append(" * ");
@@ -144,6 +144,9 @@ public class CommentGenerator implements org.mybatis.generator.api.CommentGenera
         if (this.suppressAllComments) {
             return;
         }
+        if(this.suppressAllGetSetComments){
+            return;
+        }
         method.addJavaDocLine("/**");
         StringBuilder sb = new StringBuilder();
         sb.append(" * ");
@@ -160,6 +163,9 @@ public class CommentGenerator implements org.mybatis.generator.api.CommentGenera
 
     public void addSetterComment(Method method, IntrospectedTable introspectedTable, IntrospectedColumn introspectedColumn) {
         if (this.suppressAllComments) {
+            return;
+        }
+        if(this.suppressAllGetSetComments){
             return;
         }
         method.addJavaDocLine("/**");

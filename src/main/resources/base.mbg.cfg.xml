@@ -12,6 +12,7 @@
         <property name="javaFileEncoding" value="UTF8"/>
         <property name="overwrite" value="true"/>
         <property name="tablePreName" value="Credit"/>
+        <property name="targetProject" value="/home/niu/Documents/IdeaProjects/funi-plantform-credit/src/main"/>
 
         <jdbcConnection driverClass="${mybatisGenerator.driverClass}" connectionURL="${mybatisGenerator.connectionURL}"
                         userId="${mybatisGenerator.userId}" password="${mybatisGenerator.password}">
@@ -23,24 +24,26 @@
         </javaTypeResolver>
         <!--数据对象-->
         <javaModelGenerator targetPackage="com.funi.plantform.credit.bo"
-                            targetProject="${targetProject}/java">
+                            targetProject="java">
             <property name="trimStrings" value="true"/>
             <property name="rootClass" value="BasicDto"/>
         </javaModelGenerator>
         <!--mapper.xml-->
-        <sqlMapGenerator targetPackage="com.funi.plantform.credit.mapper"
-                         targetProject="${targetProject}/java"/>
+        <sqlMapGenerator targetPackage="mappers"
+                         targetProject="resources/config"/>
         <!--Mapper-->
-        <javaClientGenerator targetPackage="com.funi.plantform.credit.mapper"
-                             targetProject="${targetProject}/resources/mapper" type="XMLMAPPER">
+        <javaClientGenerator  targetPackage="com.funi.plantform.credit.mapper"
+                              targetProject="java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
-        <table tableName="CREDIT_DICTIONARY"/>
+        <table tableName="CREDIT_DICTIONARY">
+            <columnOverride column="IS_DELETED" javaType="java.lang.Boolean"/>
+        </table>
         <table tableName="CREDIT_ORG_SCORE"/>
         <table tableName="CREDIT_ORG_SCORE_REC"/>
         <table tableName="CREDIT_ORG_SCORE_REVIEW"/>
-        <table tableName="CREDIT_ORG_SCORE_RULE"/>
+        <table tableName="CREDIT_SCORE_RULE"/>
 
     </context>
 </generatorConfiguration>

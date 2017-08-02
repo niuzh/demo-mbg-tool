@@ -1,11 +1,19 @@
 package com.funi.demo;
 
+import org.dom4j.Attribute;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import org.mybatis.generator.api.*;
 import org.mybatis.generator.config.*;
 import org.mybatis.generator.config.xml.ConfigurationParser;
 import org.mybatis.generator.exception.XMLParserException;
 import org.mybatis.generator.internal.NullProgressCallback;
 import org.mybatis.generator.internal.util.JavaBeansUtil;
+import org.xml.sax.InputSource;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,15 +22,11 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author zhihuan.niu on 7/31/17.
@@ -34,6 +38,7 @@ public class CodeGeneratorForm extends JFrame {
     private JComboBox comboBoxCode;
     private JTextField textFieldFileName;
     private JButton btnClipboard;
+    private JButton btnFile;
     private JTextArea textArea;
     private Map<String,IntrospectedTable> map=new HashMap<String,IntrospectedTable>();
     List<GeneratedJavaFile> generatedJavaFiles=new ArrayList<GeneratedJavaFile>();
@@ -48,6 +53,7 @@ public class CodeGeneratorForm extends JFrame {
         comboBoxTable =new JComboBox();
         comboBoxCode =new JComboBox();
         btnClipboard =new JButton("复制代码");
+        btnFile =new JButton("生成代码文件");
         textFieldFileName=new JTextField();
         textFieldFileName.setColumns(10);
         panelHeader.setLayout(new FlowLayout());
@@ -59,6 +65,7 @@ public class CodeGeneratorForm extends JFrame {
         panelHeader.add(comboBoxCode);
         panelHeader.add(textFieldFileName);
         panelHeader.add(btnClipboard);
+        panelHeader.add(btnFile);
         comboBoxCode.addItem("清空");
         comboBoxCode.addItem("Dto");
         comboBoxCode.addItem("Mapper");
@@ -118,12 +125,12 @@ public class CodeGeneratorForm extends JFrame {
                 if("Dto".equals(selectedItem)){
                     text += getDtoString(introspectedTable);
                     text=text.replace(tablePreName+objectName,objectName);
-                    objectName+="";
+                    objectName+=".java";
                 }
                 if("Mapper".equals(selectedItem)){
                     text += getMapperString(introspectedTable);
                     text=text.replace(tablePreName+objectName,objectName);
-                    objectName+="Mapper";
+                    objectName+="Mapper.java";
                 }
                 if("Mapper.XML".equals(selectedItem)){
                     text = getMapperXMLString(introspectedTable);
@@ -133,12 +140,19 @@ public class CodeGeneratorForm extends JFrame {
                 if("ExtJSModel".equals(selectedItem)){
                     text += getModelString(introspectedTable);
                     text=text.replace(tablePreName+objectName,objectName);
-                    objectName+="Model";
+                    objectName+="Model.js";
                 }
                 System.out.println(tablePreName+objectName);
                 text=text.replace(tablePreName+objectName,objectName);
                 textArea.setText(text);
                 textFieldFileName.setText(objectName);
+                if("Mapper.XML".equals(selectedItem)){
+                    try {
+                        dealXml();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
             }
         });
         btnClipboard.addActionListener(new ActionListener() {
@@ -149,6 +163,126 @@ public class CodeGeneratorForm extends JFrame {
                 clipboard.setContents(trandata, null);
             }
         });
+        btnFile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                IntrospectedTable introspectedTable=map.get(comboBoxTable.getSelectedItem().toString());
+                String selectedItem=comboBoxCode.getSelectedItem().toString();
+                String targetProjectBase=introspectedTable.getContext().getProperty("targetProject");
+                String targetProject="";
+                String targetPackage="";
+                if("Dto".equals(selectedItem)){
+                    JavaModelGeneratorConfiguration javaModelGeneratorConfiguration=introspectedTable.getContext().getJavaModelGeneratorConfiguration();
+                    targetProject=javaModelGeneratorConfiguration.getTargetProject();
+                    targetPackage=javaModelGeneratorConfiguration.getTargetPackage().replace(".",File.separator);
+                }
+                if("Mapper".equals(selectedItem)){
+                    JavaClientGeneratorConfiguration javaClientGeneratorConfiguration=introspectedTable.getContext().getJavaClientGeneratorConfiguration();
+                    targetProject=javaClientGeneratorConfiguration.getTargetProject();
+                    targetPackage=javaClientGeneratorConfiguration.getTargetPackage().replace(".",File.separator);
+                }
+                if("Mapper.XML".equals(selectedItem)){
+                    SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration=introspectedTable.getContext().getSqlMapGeneratorConfiguration();
+                    targetProject=sqlMapGeneratorConfiguration.getTargetProject();
+                    targetPackage=sqlMapGeneratorConfiguration.getTargetPackage().replace(".",File.separator);
+                }
+                if("ExtJSModel".equals(selectedItem)){
+                    targetProject="webapp"+File.separator+packagePrefix.replace(".",File.separator);
+                    targetPackage="model";
+                }
+                String filePath=targetProjectBase+File.separator+targetProject+File.separator+targetPackage+File.separator+textFieldFileName.getText();
+                System.out.println(filePath);
+                String text=textArea.getText();
+                contentToTxt(filePath,text);
+            }
+        });
+    }
+    private void contentToTxt(String filePath, String content) {
+        String strTemp = new String(); //原有txt内容
+        String strOld = new String();//内容更新
+        try {
+            File f = new File(filePath);
+            if (f.exists()) {
+                System.out.print("文件存在");
+            } else {
+                System.out.print("文件不存在");
+                f.createNewFile();// 不存在则创建
+            }
+            BufferedReader input = new BufferedReader(new FileReader(f));
+            while ((strTemp = input.readLine()) != null) {
+                strOld += strTemp + "\n";
+            }
+            //System.out.println(strOld);
+            input.close();
+            //strOld += content;
+
+            BufferedWriter output = new BufferedWriter(new FileWriter(f));
+            output.write(content);
+            output.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
+
+    private void dealXml() throws IOException {
+        StringReader sr = new StringReader(textArea.getText());
+        InputSource is = new InputSource(sr);
+        SAXReader reader = new SAXReader();
+        //读取文件 转换成Document
+        Document document = null;
+        try {
+            document = reader.read(is);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        //获取根节点元素对象
+        Element root = document.getRootElement();
+        //同时迭代当前节点下面的所有子节点
+        //使用递归
+        List<Element> elementList = root.elements();
+        for (Element element:elementList){
+            System.out.println(element.asXML());
+            Attribute attribute = element.attribute("id");
+            if("insert".equals(attribute.getValue())) {
+                element.setText(element.getText().replace("#{sysCreateTime,jdbcType=TIMESTAMP}", "SYSDATE()"));
+                element.setText(element.getText().replace("#{isDeleted,jdbcType=DECIMAL}", "0"));
+                element.setText(element.getText().replace("#{version,jdbcType=DECIMAL}", "0"));
+            }
+            if("updateByPrimaryKey".equals(attribute.getValue())) {
+                element.setText(element.getText().replace("#{sysUpdateTime,jdbcType=TIMESTAMP}", "SYSDATE()"));
+                element.setText(element.getText().replace("VERSION = #{version,jdbcType=DECIMAL},", ""));
+                //element.setText(element.getText().replace("IS_DELETED = #{isDeleted,jdbcType=DECIMAL}", "IS_DELETED=0"));
+                element.setText(element.getText().replace("SYS_CREATE_ID = #{sysCreateId,jdbcType=VARCHAR},",""));
+                element.setText(element.getText().replace("SYS_DELETE_ID = #{sysDeleteId,jdbcType=VARCHAR}","VERSION=VERSION+1"));
+                element.setText(element.getText().replace("SYS_CREATE_TIME = #{sysCreateTime,jdbcType=TIMESTAMP},",""));
+                element.setText(element.getText().replace("SYS_DELETE_TIME = #{sysDeleteTime,jdbcType=TIMESTAMP},",""));
+            }
+            if("updateByPrimaryKeySelective".equals(attribute.getValue())) {
+                List<Element> elementSetList = element.elements();
+                for (Element elementset:elementSetList){
+                    List<Element> elementIfList = elementset.elements();
+                    for (Element elementIf:elementIfList){
+                        //<if test="version != null">VERSION = #{version,jdbcType=DECIMAL},</if>
+                        if("version != null".equals(elementIf.attribute("test").getValue())){
+                            elementIf.setText("VERSION=VERSION+1,");
+                        }
+                    }
+                }
+            }
+        }
+        //输出格式
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        //设置编码
+        format.setEncoding("UTF-8");
+        //XMLWriter 指定输出文件以及格式
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        XMLWriter writer = new XMLWriter(new OutputStreamWriter(baos,"UTF-8"), format);
+        //写入新文件
+        writer.write(document);
+        writer.flush();
+        writer.close();
+        textArea.setText(baos.toString());
     }
     private String getDtoString(IntrospectedTable introspectedTable) {
         String objectName = introspectedTable.getTableConfiguration().getDomainObjectName();
@@ -202,7 +336,7 @@ public class CodeGeneratorForm extends JFrame {
                 text += "\t\t{name: '" + property + "',mapping: '" + property + "',  type: '" + type + "',dateFormat:'Y-m-d H:i:s'},\n";
             } else if (type.equals("integer")) {
                 text += "\t\t{name: '" + property + "',mapping: '" + property + "',  type: 'int'},\n";
-            }else if (type.equals("bigdecimal")||type.equals("double")) {
+            } else if (type.equals("bigdecimal")||type.equals("double")||type.equals("short")) {
                 text += "\t\t{name: '" + property + "',mapping: '" + property + "',  type: 'number'},\n";
             } else {
                 text += "\t\t{name: '" + property + "',mapping: '" + property + "',  type: '" + type + "'},\n";
@@ -277,6 +411,10 @@ public class CodeGeneratorForm extends JFrame {
                 introspectedTable.getTableConfiguration().setDeleteByExampleStatementEnabled(false);
                 introspectedTable.getTableConfiguration().setSelectByExampleStatementEnabled(false);
                 introspectedTable.getTableConfiguration().setUpdateByExampleStatementEnabled(false);
+                //<columnOverride column="IS_DELETED" javaType="java.lang.Boolean"/>
+                ColumnOverride columnOverride=new ColumnOverride("IS_DELETED");
+                columnOverride.setJavaType("java.lang.Boolean");
+                introspectedTable.getTableConfiguration().addColumnOverride(columnOverride);
                 comboBoxTable.addItem(tableName);
                 map.put(tableName,introspectedTable);
             }
