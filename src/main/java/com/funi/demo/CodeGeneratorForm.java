@@ -338,8 +338,10 @@ public class CodeGeneratorForm extends JFrame {
                 text += "\t\t{name: '" + property + "',mapping: '" + property + "',  type: 'int'},\n";
             } else if (type.equals("bigdecimal")||type.equals("double")||type.equals("short")) {
                 text += "\t\t{name: '" + property + "',mapping: '" + property + "',  type: 'number'},\n";
+            } else if (type.equals("boolean")) {
+                text += "\t\t{name: '" + property + "',mapping: '" + property + "',  type: 'boolean', defaultValue: false},\n";
             } else {
-                text += "\t\t{name: '" + property + "',mapping: '" + property + "',  type: '" + type + "'},\n";
+                text += "\t\t{name: '" + property + "',mapping: '" + property + "',  type: 'string'},\n";
             }
         }
         text+="\t]\n" +

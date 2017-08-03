@@ -39,11 +39,16 @@
 
         <table tableName="CREDIT_DICTIONARY">
             <columnOverride column="IS_DELETED" javaType="java.lang.Boolean"/>
+            <columnOverride column="status" javaType="com.funi.plantform.credit.enumeration.EUseStatusType"/>
         </table>
         <table tableName="CREDIT_ORG_SCORE"/>
-        <table tableName="CREDIT_ORG_SCORE_REC"/>
+        <table tableName="CREDIT_ORG_SCORE_REC">
+            <columnOverride column="status" javaType="com.funi.plantform.credit.enumeration.EScoreStatuesType"/>
+        </table>
         <table tableName="CREDIT_ORG_SCORE_REVIEW"/>
-        <table tableName="CREDIT_SCORE_RULE"/>
+        <table tableName="CREDIT_SCORE_RULE">
+            <columnOverride column="status" javaType="com.funi.plantform.credit.enumeration.EUseStatusType"/>
+        </table>
 
     </context>
 </generatorConfiguration>
