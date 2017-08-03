@@ -245,12 +245,12 @@ public class CodeGeneratorForm extends JFrame {
             System.out.println(element.asXML());
             Attribute attribute = element.attribute("id");
             if("insert".equals(attribute.getValue())) {
-                element.setText(element.getText().replace("#{sysCreateTime,jdbcType=TIMESTAMP}", "SYSDATE()"));
+                element.setText(element.getText().replace("#{sysCreateTime,jdbcType=TIMESTAMP}", "SYSDATE"));
                 element.setText(element.getText().replace("#{isDeleted,jdbcType=DECIMAL}", "0"));
                 element.setText(element.getText().replace("#{version,jdbcType=DECIMAL}", "0"));
             }
             if("updateByPrimaryKey".equals(attribute.getValue())) {
-                element.setText(element.getText().replace("#{sysUpdateTime,jdbcType=TIMESTAMP}", "SYSDATE()"));
+                element.setText(element.getText().replace("#{sysUpdateTime,jdbcType=TIMESTAMP}", "SYSDATE"));
                 element.setText(element.getText().replace("VERSION = #{version,jdbcType=DECIMAL},", ""));
                 //element.setText(element.getText().replace("IS_DELETED = #{isDeleted,jdbcType=DECIMAL}", "IS_DELETED=0"));
                 element.setText(element.getText().replace("SYS_CREATE_ID = #{sysCreateId,jdbcType=VARCHAR},",""));
