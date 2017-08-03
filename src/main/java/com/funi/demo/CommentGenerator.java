@@ -101,6 +101,9 @@ public class CommentGenerator implements org.mybatis.generator.api.CommentGenera
         sb.append(introspectedColumn.getRemarks());
         field.addJavaDocLine(sb.toString().replace("\n", " "));*/
         field.addJavaDocLine("//"+introspectedColumn.getRemarks());
+        if(field.getType().getShortName().equals("Date")){
+            field.addJavaDocLine("@org.springframework.format.annotation.DateTimeFormat(pattern = \"yyyy-MM-dd\")");
+        }
     }
 
     public void addFieldComment(Field field, IntrospectedTable introspectedTable) {
@@ -163,9 +166,6 @@ public class CommentGenerator implements org.mybatis.generator.api.CommentGenera
 
     public void addSetterComment(Method method, IntrospectedTable introspectedTable, IntrospectedColumn introspectedColumn) {
         if (this.suppressAllComments) {
-            return;
-        }
-        if(this.suppressAllGetSetComments){
             return;
         }
         method.addJavaDocLine("/**");
