@@ -102,7 +102,7 @@ public class CommentGenerator implements org.mybatis.generator.api.CommentGenera
         field.addJavaDocLine(sb.toString().replace("\n", " "));*/
         field.addJavaDocLine("//"+introspectedColumn.getRemarks());
         if(field.getType().getShortName().equals("Date")){
-            field.addJavaDocLine("@org.springframework.format.annotation.DateTimeFormat(pattern = \"yyyy-MM-dd\")");
+            field.addJavaDocLine("@org.springframework.format.annotation.DateTimeFormat(pattern = \"yyyy-MM-dd HH:mm:ss\")");
         }
     }
 
