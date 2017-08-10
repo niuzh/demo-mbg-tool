@@ -16,6 +16,21 @@
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
+  <!-- 指定Maven仓库 -->
+  <repositories>
+    <!-- 公司的maven仓库 -->
+    <repository>
+      <id>funiRepository</id>
+      <name>local private nexus</name>
+      <url>http://gitlab.funi.com/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <dependencies>
     <!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
