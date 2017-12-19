@@ -55,6 +55,12 @@
         </table>
         <table tableName="CREDIT_COMPLAINT_DEAL">
         </table>
+        <table tableName="PRO">
+        </table>
+        <table tableName="ENT_ORG">
+        </table>
+        <table tableName="ENT_ORG_QUALIFY">
+        </table>
 
     </context>
 </generatorConfiguration>
