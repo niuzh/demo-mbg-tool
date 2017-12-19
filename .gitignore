@@ -1,8 +1,9 @@
-.idea/**
-
+.idea/
 funi-demo-*/*.iml
-
 funi-demo-*/target/
 *.pdb
 *.iml
-/target/
+/target
+.settings/
+.project
+.classpath
