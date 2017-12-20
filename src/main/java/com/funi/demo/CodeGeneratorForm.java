@@ -288,7 +288,7 @@ public class CodeGeneratorForm extends JFrame {
         String objectName = introspectedTable.getTableConfiguration().getDomainObjectName();
         String text="";
         for (GeneratedJavaFile javaFile:generatedJavaFiles){
-            if(javaFile.getCompilationUnit().getType().getShortName().endsWith(objectName)){
+            if(javaFile.getCompilationUnit().getType().getShortName().replace(tablePreName,"").equals(objectName)){
                 text=javaFile.toString();
             }
         }
@@ -298,7 +298,7 @@ public class CodeGeneratorForm extends JFrame {
         String objectName = introspectedTable.getTableConfiguration().getDomainObjectName();
         String text="";
         for (GeneratedJavaFile javaFile:generatedJavaFiles){
-            if(javaFile.getCompilationUnit().getType().getShortName().endsWith(objectName+"Mapper")){
+            if(javaFile.getCompilationUnit().getType().getShortName().replace(tablePreName,"").equals(objectName+"Mapper")){
                 text=javaFile.toString();
             }
         }
@@ -308,7 +308,7 @@ public class CodeGeneratorForm extends JFrame {
         String objectName = introspectedTable.getTableConfiguration().getDomainObjectName();
         String text="";
         for (GeneratedXmlFile javaFile:generatedXmlFiles){
-            if(javaFile.getFileName().endsWith(objectName+"Mapper.xml")){
+            if(javaFile.getFileName().replace(tablePreName,"").equals(objectName+"Mapper.xml")){
                 text=javaFile.toString();
             }
         }
