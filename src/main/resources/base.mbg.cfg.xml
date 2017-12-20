@@ -12,7 +12,7 @@
         <property name="javaFileEncoding" value="UTF8"/>
         <property name="overwrite" value="true"/>
         <property name="tablePreName" value="Credit"/>
-        <property name="targetProject" value="/home/niu/Documents/IdeaProjects/funi-plantform-credit/src/main"/>
+        <property name="targetProject" value="/home/niu/Documents/workspace-credit/funi-plantform-credit/src/main"/>
 
         <jdbcConnection driverClass="${mybatisGenerator.driverClass}" connectionURL="${mybatisGenerator.connectionURL}"
                         userId="${mybatisGenerator.userId}" password="${mybatisGenerator.password}">
@@ -60,6 +60,16 @@
         <table tableName="ENT_ORG">
         </table>
         <table tableName="ENT_ORG_QUALIFY">
+        </table>
+        <table tableName="CREDIT_FILE">
+        </table>
+        <table tableName="CREDIT_PROPERTY">
+        </table>
+        <table tableName="CREDIT_ORG_PROPERTY_REL">
+        </table>
+        <table tableName="CREDIT_BIZ_PROPERTY">
+        </table>
+        <table tableName="CREDIT_BIZ_PROPERTY_REVIEW">
         </table>
 
     </context>
