@@ -57,9 +57,9 @@
         </table>
         <table tableName="PRO">
         </table>
-        <table tableName="ENT_ORG">
+        <table tableName="ENT_ORG" schema="eistrong" enableSelectByPrimaryKey="true">
         </table>
-        <table tableName="ENT_ORG_QUALIFY">
+        <table tableName="ENT_ORG_QUALIFY" schema="eistrong">
         </table>
         <table tableName="CREDIT_FILE">
         </table>

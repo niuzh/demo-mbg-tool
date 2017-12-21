@@ -142,7 +142,7 @@ public class CodeGeneratorForm extends JFrame {
                     text=text.replace(tablePreName+objectName,objectName);
                     objectName+="Model.js";
                 }
-                System.out.println(tablePreName+objectName);
+                System.out.println(objectName);
                 text=text.replace(tablePreName+objectName,objectName);
                 textArea.setText(text);
                 textFieldFileName.setText(objectName);
@@ -400,8 +400,14 @@ public class CodeGeneratorForm extends JFrame {
             Field file=context.getClass().getDeclaredField("introspectedTables");
             file.setAccessible(true);
             List<IntrospectedTable> list=(List<IntrospectedTable>)file.get(context);
+            List<String> tableNameList=new ArrayList<>();
             for (IntrospectedTable introspectedTable:list){
                 String tableName=introspectedTable.getTableConfiguration().getTableName();
+                if(tableNameList.contains(tableName)){
+                	continue;
+                } else {
+					tableNameList.add(tableName);
+				}
                 System.out.println(tablePreName);
                 TableConfiguration tableConfiguration=introspectedTable.getTableConfiguration();
                 System.out.println(tableConfiguration.getTableName());
