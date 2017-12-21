@@ -125,6 +125,7 @@ public class CodeGeneratorForm extends JFrame {
                 if("Dto".equals(selectedItem)){
                     text += getDtoString(introspectedTable);
                     text=text.replace(tablePreName+objectName,objectName);
+                    text=text.replace("Short","Long");
                     objectName+=".java";
                 }
                 if("Mapper".equals(selectedItem)){
